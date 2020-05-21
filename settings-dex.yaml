@@ -1,0 +1,5 @@
+issuer: https://dex.example.net:5554/dex
+clientid: XXXXXXXX
+clientsecret: XXXXXXXX
+#redirecturl: http://localhost:12345
+#scopes: [openid, profile, email]
