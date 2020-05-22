@@ -11,12 +11,13 @@ import (
 )
 
 type OpenIDC struct {
-	// Embedding oauth2.Config gives us access to fields including
-	// ClientID, ClientSecret and methods AuthCodeURL(), Exchange().
-	// https://godoc.org/golang.org/x/oauth2#Config
-	oauth2.Config `yaml:",inline"`
-	Issuer        string
+	Issuer       string   `yaml:"issuer"`
+	ClientID     string   `yaml:"client_id"`
+	ClientSecret string   `yaml:"client_secret"`
+	RedirectURL  string   `yaml:"redirect_url"`
+	Scopes       []string `yaml:"scopes"`
 
+	oauth2   *oauth2.Config
 	provider *oidc.Provider
 	verifier *oidc.IDTokenVerifier
 }
@@ -33,7 +34,7 @@ func (app *OpenIDC) Init(ctx context.Context) error {
 		return fmt.Errorf("issuer is missing")
 	}
 	if app.ClientID == "" {
-		return fmt.Errorf("clientid is missing")
+		return fmt.Errorf("client_id is missing")
 	}
 	if app.RedirectURL == "" {
 		app.RedirectURL = "urn:ietf:wg:oauth:2.0:oob"
@@ -46,17 +47,22 @@ func (app *OpenIDC) Init(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if app.Endpoint == (oauth2.Endpoint{}) {
-		app.Endpoint = app.provider.Endpoint()
-	}
 	app.verifier = app.provider.Verifier(&oidc.Config{ClientID: app.ClientID})
+	// https://godoc.org/golang.org/x/oauth2#Config
+	app.oauth2 = &oauth2.Config{
+		ClientID:     app.ClientID,
+		ClientSecret: app.ClientSecret,
+		RedirectURL:  app.RedirectURL,
+		Endpoint:     app.provider.Endpoint(),
+		Scopes:       app.Scopes,
+	}
 
 	return nil
 }
 
 func (app *OpenIDC) CodeToIDToken(ctx context.Context, code string) (*oidc.IDToken, error) {
 	// Call out to exchange code for token
-	oauth2Token, err := app.Exchange(ctx, code)
+	oauth2Token, err := app.oauth2.Exchange(ctx, code)
 	if err != nil {
 		return nil, err
 	}
@@ -74,6 +80,10 @@ func (app *OpenIDC) CodeToIDToken(ctx context.Context, code string) (*oidc.IDTok
 	}
 
 	return idToken, nil
+}
+
+func (app *OpenIDC) AuthCodeURL(state string) string {
+	return app.oauth2.AuthCodeURL(state)
 }
 
 // Replaces yaml.UnmarshalStrict

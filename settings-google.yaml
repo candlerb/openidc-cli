@@ -1,5 +1,5 @@
 issuer: https://accounts.google.com
-clientid: XXXXXXXXXXXXXXXX
-clientsecret: XXXXXXXXXXXXXXXX
-#redirecturl: http://localhost:12345
+client_id: XXXXXXXXXXXXXXXX
+client_secret: XXXXXXXXXXXXXXXX
+#redirect_url: http://localhost:12345
 #scopes: [openid, profile, email]

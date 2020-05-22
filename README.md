@@ -3,8 +3,8 @@
 This is a demonstrator of using OpenIDC to verify identity, i.e. as a
 Relying Party (RP), using just the command line.
 
-Configure `settings.yaml`: at minimum it needs the `issuer`, `clientid`,
-`clientsecret`.
+Configure `settings.yaml`: at minimum it needs the `issuer`, `client_id`,
+`client_secret`.
 
 Run the tool:
 
@@ -25,7 +25,7 @@ OAuth client IDs are created at
 <https://console.developers.google.com/apis/credentials/oauthclient>
 
 When the identity provider is asked to provide a pasteable code, the
-redirecturl is set to the well-known value `urn:ietf:wg:oauth:2.0:oob`
+redirect_url is set to the well-known value `urn:ietf:wg:oauth:2.0:oob`
 
 For this to work with Google, you should create your OAuth2 client as
 type "Desktop App" rather than "Web application".
